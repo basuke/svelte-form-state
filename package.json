@@ -1,0 +1,39 @@
+{
+  "name": "svelte-form-state",
+  "version": "1.0.0",
+  "description": "Form values and state management library for Svelte",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "svelte": "src/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/basuke/svelte-form-state.git"
+  },
+  "keywords": [
+    "svelte",
+    "form",
+    "state",
+    "store"
+  ],
+  "author": "Basuke Suzuki <basuke@siesta.co.jp> (https://github.com/basuke)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/basuke/svelte-form-state/issues"
+  },
+  "homepage": "https://github.com/basuke/svelte-form-state#readme",
+  "devDependencies": {
+    "rollup": "^1.32.0",
+    "@rollup/plugin-node-resolve": "^7.0.0",
+    "rollup-plugin-svelte": "^5.1.1",
+    "svelte": "^3.19.2"
+  },
+  "dependencies": {
+  }
+}
