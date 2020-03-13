@@ -30,3 +30,19 @@ test('basic feature', () => {
     expect(get(state).focus).toBeNull();
     expect(state.isDirty('email')).toBeFalsy();
 });
+
+it("tests filter", () => {
+    const {form, state} = create({
+        values: {name: ""},
+        filters: {
+            name: [value => value + "!!!!"]
+        }
+    });
+
+    form.update(values => {
+        values.name = "Hello";
+        return values;
+    });
+
+    // expect(get(state).values).toBe("Hello!!!!");
+});

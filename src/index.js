@@ -1,7 +1,6 @@
 import {writable, get} from "svelte/store";
 import {setContext} from "svelte";
-import {init, changed, validate, validateValue} from './state';
-import {keys, obj_diff_keys} from './utils';
+import {init, apply, changed, validate} from './state';
 
 export function define(config) { 
     const {form, state} = create(config);
@@ -10,67 +9,80 @@ export function define(config) {
     return {form, state};
 }
 
+const plugins = [
+    {
+        name: "filter",
+        init: function init(_state) {
+            const {config: {filters = []}} = _state;
+            return {..._state, filters};
+        }
+    },
+    {
+        name: "dirty",
+        init: function init(_state) {
+            return {
+                ..._state,
+                dirty: new Set(),
+            };
+        },
+        valueChanged: function valueChanged(_state) {
+            const {key} = _state;
+            _state.dirty.add(key);
+            return _state;
+        }
+    },
+    require('./focus'),
+    {
+        name: "validation",
+        init: function init(_state) {
+            return {
+                ..._state,
+
+                pendingKeys: new Set(),
+                errors: {},
+                valid: undefined,
+            }
+        },
+    },
+];
+
 export function create(config) {
     let values = {...config.values};
 
+    config = apply(plugins, 'reduce', config);
+
     const formStore = writable(values);
-    const stateStore = writable(init(config));
+    const stateStore = writable(init({plugins, ...config}));
 
     formStore.subscribe(values => {
         stateStore.update(state => changed(state, values));
     });
 
-    return {
+    const finalize = {
+        create(result) {
+            const state = {...result.state};
+            delete state.update;
+            delete state.set;
+
+            delete result.values;
+
+            return {...result, state};
+        }
+    };
+    return apply(plugins.concat([finalize]), 'create', {
+        values,
         form: {
             ...formStore,
-
-            focus: keys(values).reduce((obj, key) => {
-                obj[key] = () => stateStore.update(state => focus(state, key));
-                return obj;
-            }, {}),
-
-            blur: () => {
-                stateStore.update(state => {
-                    const newState = blur(state);
-                    const keys = obj_diff_keys(newState.values, values);
-                    if (keys.length) {
-                        for (const key of obj_diff_keys(state.values, values)) {
-                            values[key] = state.values[key];
-                        }
-                        formStore.set(values);
-                    }
-                    return newState;
-                });
-            },
 
             validate: () => {
                 stateStore.update(state => validate(state));
             }
         },
         state: {
-            subscribe: stateStore.subscribe,
+            ...stateStore,
             isDirty: name => get(stateStore).dirty.has(name),
         }
-    };
-}
-
-function focus(state, key) {
-    const {errors, pendingKeys} = state;
-
-    if (errors[key]) {
-        delete errors[key];
-        pendingKeys.add(key);
-    }
-
-    return {...state, errors, focus: key, pendingKeys};
-}
-
-function blur(state) {
-    const {pendingKeys, values} = state;
-    for (const key of Array.from(pendingKeys)) {
-        validateValue(state, key, values[key]);
-    }
-    return {...state, focus: null, pendingKeys: new Set()};
+    });
 }
 
 export default {define, create};

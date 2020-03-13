@@ -1,22 +1,36 @@
-import {keys, obj_diff_keys} from './utils';
+import {keys, obj_diff_keys, is_callable} from './utils';
 
-export function init({
-    values = {},
-    validators = {},
-    filters = {}
-}) {
-    const state = {
+export function init(config) {
+    const {values = {}, plugins = []} = config;
+
+    const _state = {
+        config,
         values,
-        validators,
-        filters,
-        dirty: new Set(),
-        focus: null,
-        pendingKeys: new Set(),
-        errors: {},
-        valid: undefined,
+        validators: [],
+        plugins,
     };
 
-    return state;
+    const finalize = {
+        init(_state) {
+            delete _state.config;
+            return _state;
+        }
+    };
+    return apply(plugins.concat(finalize), 'init', _state);
+}
+
+/**
+ * Apply plugin's methods.
+ * @param array plugins 
+ * @param string method 
+ * @param any initial 
+ */
+export function apply(plugins, method, initial) {
+    return plugins
+        .filter(plugin => is_callable(plugin[method]))
+        .reduce(
+            (value, plugin) => plugin[method](value),
+            initial);
 }
 
 function shouldValidateWhileEditing(key, focus) {
@@ -25,16 +39,21 @@ function shouldValidateWhileEditing(key, focus) {
 }
 
 export function changed(state, newValues) {
-    const {focus, dirty, values, pendingKeys} = state;
+    const diff_keys = obj_diff_keys(state.values, newValues);
+    if (diff_keys.length == 0)
+        return state;
 
-    const filteredValues = filter(state, newValues);
+    const {plugins, focus, pendingKeys} = state;
 
-    for (const key of obj_diff_keys(values, filteredValues)) {
-        // update value
-        const value = values[key] = filteredValues[key];
+    state.newValues = {...newValues};
+    state.newValues = {...filter(state)};
 
-        // make it dirty
-        dirty.add(key);
+    for (const key of diff_keys) {
+        const value = state.newValues[key];
+
+        state.key = key;
+        state.value = value;
+        apply(plugins, 'valueChanged', state);
 
         if (shouldValidateWhileEditing(key, focus))
             validateValue(state, key, value);
@@ -42,10 +61,14 @@ export function changed(state, newValues) {
             pendingKeys.add(key);
     }
 
+    delete state.key;
+    delete state.value;
+    delete state.newValues;
     return {...state, valid: undefined};
 }
 
-function filter(state, values) {
+function filter(state) {
+    const values = state.newValues;
     return keys(values).reduce((result, key) => {
         result[key] = filterValue(state, key, values[key]);
         return result;
@@ -57,7 +80,7 @@ function filterValue(state, key, value) {
 
     if (filters[key]) {
         for (const filter of filters[key]) {
-            value = filter({...state, key, value});
+            value = filter(value);
         }
     }
     return value;
