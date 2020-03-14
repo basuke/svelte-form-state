@@ -1,6 +1,7 @@
-import {writable, get} from "svelte/store";
+import {writable} from "svelte/store";
 import {setContext} from "svelte";
 import {init, apply, changed, validate} from './state';
+import {del_keys} from './utils';
 
 export function define(config) { 
     const {form, state} = create(config);
@@ -10,27 +11,8 @@ export function define(config) {
 }
 
 const plugins = [
-    {
-        name: "filter",
-        init: function init(_state) {
-            const {config: {filters = []}} = _state;
-            return {..._state, filters};
-        }
-    },
-    {
-        name: "dirty",
-        init: function init(_state) {
-            return {
-                ..._state,
-                dirty: new Set(),
-            };
-        },
-        valueChanged: function valueChanged(_state) {
-            const {key} = _state;
-            _state.dirty.add(key);
-            return _state;
-        }
-    },
+    require('./filtering'),
+    require('./dirty'),
     require('./focus'),
     {
         name: "validation",
@@ -49,49 +31,37 @@ const plugins = [
 export function create(config) {
     let values = {...config.values};
 
-    config = apply(plugins, 'reduce', config);
-
-    const formStore = writable(values);
-    const stateStore = writable({
+    const form = writable(values);
+    const state = writable({
         ...init({plugins, ...config}),
 
         setFormValue(key, value) {
-            formStore.update(values => {
+            form.update(values => {
                 values[key] = value;
                 return values;
             })
         }
     });
 
-    formStore.subscribe(values => {
-        stateStore.update(state => changed(state, values));
+    form.subscribe(values => {
+        state.update(_state => changed(_state, values));
     });
 
-    const finalize = {
-        create(result) {
-            const state = {...result.state};
-            delete state.update;
-            delete state.set;
-
-            delete result.values;
-
-            return {...result, state};
-        }
-    };
-    return apply(plugins.concat([finalize]), 'create', {
-        values,
-        form: {
-            ...formStore,
-
-            validate: () => {
-                stateStore.update(state => validate(state));
-            }
-        },
-        state: {
-            ...stateStore,
-            isDirty: name => get(stateStore).dirty.has(name),
-        }
-    });
+    return apply(
+        plugins.concat([finalize]),
+        'create',
+        {values, form, state}
+    );
 }
+
+const finalize = {
+    create(result) {
+        const state = {...result.state};
+        return {
+            ...del_keys(result, 'values'),
+            state: del_keys(state, 'update', 'set')
+        };
+    }
+};
 
 export default {define, create};

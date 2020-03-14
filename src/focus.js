@@ -1,5 +1,4 @@
-import {validateValue} from './state';
-import {keys, obj_diff_keys} from './utils';
+import {keys} from './utils';
 
 export const name = "focus";
 
@@ -31,8 +30,10 @@ export function create(result) {
 }
 
 export function shouldSyncValue([state, key, flag]) {
-    const {focus} = state;
+    const {focus, pendingKeys} = state;
     flag = flag && (focus !== key);
+    if (!flag)
+        pendingKeys.add(key);
     return [state, key, flag];
 }
 
@@ -55,7 +56,7 @@ function blur(state) {
     const {pendingKeys, setFormValue, values} = state;
     for (const key of Array.from(pendingKeys)) {
         setFormValue(key, values[key]);
-        validateValue(state, key, values[key]);
+        // validateValue(state, key, values[key]);
     }
     return {...state, focus: null, pendingKeys: new Set()};
 }

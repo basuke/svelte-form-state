@@ -45,3 +45,10 @@ export function array_unique_merge(...arrays) {
         return result;
     }, []);
 }
+
+export function del_keys(obj, ...keys) {
+    for (const key of keys)
+        delete obj[key];
+    return obj;
+
+}
