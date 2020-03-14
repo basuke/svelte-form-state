@@ -6,7 +6,6 @@ export function init(config) {
     const state = {
         config,
         values,
-        validators: [],
         plugins,
     };
 
@@ -28,32 +27,27 @@ export function apply(plugins, method, initial) {
             initial);
 }
 
-export function changed(state, newValues) {
-    const diff_keys = obj_diff_keys(state.values, newValues);
+export function changed(state, values) {
+    const diff_keys = obj_diff_keys(state.values, values);
     if (diff_keys.length == 0)
         return state;
 
     const {plugins} = state;
 
     for (const key of diff_keys) {
-        let value = newValues[key];
+        let value = values[key];
 
         state.values[key] = value;
 
-        state = apply(plugins, 'valueChanged', [state, key, value])[0];
+        state = apply(plugins, 'valueChanged', [state, key])[0];
 
         const [state1, _, doIt] = apply(plugins, 'shouldSyncValue', [state, key, true]);
         state = state1;
         if (doIt)
             state.setFormValue(key, state.values[key]);
-
-        // if (shouldValidateWhileEditing(key, focus))
-        //     validateValue(state, key, value);
-        // else
-        //     pendingKeys.add(key);
     }
 
     return state;
 }
 
-export default {init};
+export default {init, apply, changed};

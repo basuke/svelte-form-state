@@ -5,17 +5,18 @@ export function init(_state) {
     return {..._state, filters};
 }
 
-export function valueChanged([state, key, value]) {
-    const {filters} = state;
+export function valueChanged([state, key]) {
+    const {filters, values} = state;
+    let value = values[key];
 
     if (filters[key]) {
         for (const filter of filters[key]) {
             value = filter(value);
         }
-        state.values[key] = value;
+        values[key] = value;
     }
 
-    return [state, key, value];
+    return [state, key];
 }
 
 export default {name, init, valueChanged};

@@ -14,9 +14,9 @@ export function create(result) {
     return {...result, state};
 }
 
-export function valueChanged([state, key, value]) {
+export function valueChanged([state, key]) {
     state.dirty.add(key);
-    return [state, key, value];
+    return [state, key];
 }
 
 export default {name, init, valueChanged};
