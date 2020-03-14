@@ -52,7 +52,16 @@ export function create(config) {
     config = apply(plugins, 'reduce', config);
 
     const formStore = writable(values);
-    const stateStore = writable(init({plugins, ...config}));
+    const stateStore = writable({
+        ...init({plugins, ...config}),
+
+        setFormValue(key, value) {
+            formStore.update(values => {
+                values[key] = value;
+                return values;
+            })
+        }
+    });
 
     formStore.subscribe(values => {
         stateStore.update(state => changed(state, values));

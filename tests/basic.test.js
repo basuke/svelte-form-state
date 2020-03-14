@@ -44,5 +44,6 @@ it("tests filter", () => {
         return values;
     });
 
-    // expect(get(state).values).toBe("Hello!!!!");
+    expect(get(state).values.name).toBe("Hello!!!!");
+    expect(get(form).name).toBe("Hello!!!!");
 });

@@ -45,34 +45,34 @@ export function changed(state, newValues) {
 
     const {plugins, focus, pendingKeys} = state;
 
-    state.newValues = {...newValues};
-    state.newValues = {...filter(state)};
+    const [newState, filteredValues] = filter([state, newValues]);
+    newState.values = filteredValues;
 
     for (const key of diff_keys) {
-        const value = state.newValues[key];
+        const value = newState.values[key];
+        newState.setFormValue(key, value);
 
-        state.key = key;
-        state.value = value;
-        apply(plugins, 'valueChanged', state);
+        newState.key = key;
+        newState.value = value;
+        apply(plugins, 'valueChanged', newState);
 
         if (shouldValidateWhileEditing(key, focus))
-            validateValue(state, key, value);
+            validateValue(newState, key, value);
         else
             pendingKeys.add(key);
     }
 
-    delete state.key;
-    delete state.value;
-    delete state.newValues;
-    return {...state, valid: undefined};
+    delete newState.key;
+    delete newState.value;
+    return {...newState, valid: undefined};
 }
 
-function filter(state) {
-    const values = state.newValues;
-    return keys(values).reduce((result, key) => {
+function filter([state, values]) {
+    const filteredValues = keys(values).reduce((result, key) => {
         result[key] = filterValue(state, key, values[key]);
         return result;
     }, {});
+    return [state, filteredValues];
 }
 
 function filterValue(state, key, value) {

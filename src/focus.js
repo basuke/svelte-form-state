@@ -24,18 +24,27 @@ export function create(result) {
     form.blur = () => {
         state.update(state => {
             const newState = blur(state);
-            const keys = obj_diff_keys(newState.values, values);
+            const keys = obj_diff_keys(newState.values, state.values);
             if (keys.length) {
-                for (const key of obj_diff_keys(state.values, values)) {
-                    values[key] = state.values[key];
+                for (const key of obj_diff_keys(newState.values, state.values)) {
+                    newState.setFormValue(key, newState.values[key]);
                 }
-                form.set(values);
             }
             return newState;
         });
     };
 
     return {...result, form};
+}
+
+export function canSync([state, key, flag]) {
+    const {focus} = state;
+    flag = flag && (focus !== key);
+    return [state, key, flag];
+}
+
+export function valuesChanged(state) {
+    return state;
 }
 
 function focus(state, key) {
@@ -57,4 +66,4 @@ function blur(state) {
     return {...state, focus: null, pendingKeys: new Set()};
 }
 
-export default {name, events, prepare, init, create};
+export default {name, events, prepare, init, create, valuesChanged};
