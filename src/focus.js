@@ -41,6 +41,12 @@ export function valuesChanged(state) {
     return state;
 }
 
+export function shouldValidate([state, key, doIt]) {
+    const {focus} = state;
+    if (focus == key) doIt = false;
+    return [state, key, doIt];
+}
+
 function focus(state, key) {
     const {errors, pendingKeys} = state;
 
@@ -61,4 +67,4 @@ function blur(state) {
     return {...state, focus: null, pendingKeys: new Set()};
 }
 
-export default {name, events, prepare, init, create, valuesChanged, shouldSyncValue};
+export default {name, events, prepare, init, create, valuesChanged, shouldSyncValue, shouldValidate};

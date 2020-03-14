@@ -14,18 +14,7 @@ const plugins = [
     require('./filtering'),
     require('./dirty'),
     require('./focus'),
-    {
-        name: "validation",
-        init: function init(_state) {
-            return {
-                ..._state,
-
-                pendingKeys: new Set(),
-                errors: {},
-                valid: undefined,
-            }
-        },
-    },
+    require('./validation'),
 ];
 
 export function create(config) {
