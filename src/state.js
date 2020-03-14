@@ -1,22 +1,17 @@
-import {keys, obj_diff_keys, is_callable} from './utils';
+import {obj_diff_keys, is_callable, del_keys} from './utils';
 
 export function init(config) {
     const {values = {}, plugins = []} = config;
 
-    const _state = {
+    const state = {
         config,
         values,
         validators: [],
         plugins,
     };
 
-    const finalize = {
-        init(_state) {
-            delete _state.config;
-            return _state;
-        }
-    };
-    return apply(plugins.concat(finalize), 'init', _state);
+    const finalize = {init: state => del_keys(state, 'config')};
+    return apply(plugins.concat(finalize), 'init', state);
 }
 
 /**
@@ -45,15 +40,12 @@ export function changed(state, newValues) {
 
         state.values[key] = value;
 
-        let result = apply(plugins, 'valueChanged', [state, key, value]);
-        state = result[0];
-        value = result[2];
+        state = apply(plugins, 'valueChanged', [state, key, value])[0];
 
-        result = apply(plugins, 'shouldSyncValue', [state, key, true]);
-        state = result[0];
-        const doIt = result[2];
+        const [state1, _, doIt] = apply(plugins, 'shouldSyncValue', [state, key, true]);
+        state = state1;
         if (doIt)
-            state.setFormValue(key, value);
+            state.setFormValue(key, state.values[key]);
 
         // if (shouldValidateWhileEditing(key, focus))
         //     validateValue(state, key, value);
@@ -61,22 +53,7 @@ export function changed(state, newValues) {
         //     pendingKeys.add(key);
     }
 
-    delete state.key;
-    delete state.value;
     return state;
-}
-
-function filterValue([state, key, value]) {
-    const {filters} = state;
-
-    if (filters[key]) {
-        for (const filter of filters[key]) {
-            value = filter(value);
-        }
-        state.values[key] = value;
-    }
-
-    return [state, key, value];
 }
 
 export default {init};

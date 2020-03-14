@@ -1,6 +1,6 @@
 import {writable} from "svelte/store";
 import {setContext} from "svelte";
-import {init, apply, changed, validate} from './state';
+import {init, apply, changed} from './state';
 import {del_keys} from './utils';
 
 export function define(config) { 
@@ -47,11 +47,7 @@ export function create(config) {
         state.update(_state => changed(_state, values));
     });
 
-    return apply(
-        plugins.concat([finalize]),
-        'create',
-        {values, form, state}
-    );
+    return apply(plugins.concat([finalize]), 'create', {values, form, state});
 }
 
 const finalize = {
