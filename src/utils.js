@@ -52,3 +52,17 @@ export function del_keys(obj, ...keys) {
     return obj;
 
 }
+
+export function obj_subset(obj, keys) {
+    return keys.reduce((result, key) => {
+        result[key] = obj[key];
+        return result;
+    }, {});
+}
+
+export function obj_update(dest, src) {
+    return keys(src).reduce((dest, key) => {
+        dest[key] = src[key];
+        return dest;
+    }, dest);
+}

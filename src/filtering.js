@@ -1,3 +1,5 @@
+import {keys} from "./utils";
+
 export const name = "filter";
 
 export function init(_state) {
@@ -5,18 +7,21 @@ export function init(_state) {
     return {..._state, filters};
 }
 
-export function valueChanged([state, key]) {
-    const {filters, values} = state;
-    let value = values[key];
+export function changed([state, values]) {
+    const {filters} = state;
 
-    if (filters[key]) {
-        for (const filter of filters[key]) {
-            value = filter(value);
-        }
-        values[key] = value;
-    }
+    keys(values)
+        .filter(key => key in filters)
+        .forEach(key => {
+            let value = values[key];
 
-    return [state, key];
+            for (const filter of filters[key]) {
+                value = filter(value);
+            }
+            values[key] = value;
+        });
+
+    return [state, values];
 }
 
-export default {name, init, valueChanged};
+export default {name, init, changed};

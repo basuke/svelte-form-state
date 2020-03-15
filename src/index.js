@@ -3,6 +3,9 @@ import {setContext} from "svelte";
 import {init, apply, changed} from './state';
 import {del_keys} from './utils';
 
+export const name = 'index';
+export const events = ['create'];
+
 export function define(config) { 
     const {form, state} = create(config);
     setContext('form', form);
@@ -11,8 +14,8 @@ export function define(config) {
 }
 
 const plugins = [
-    require('./filtering'),
     require('./dirty'),
+    require('./filtering'),
     require('./focus'),
     require('./validation'),
 ];

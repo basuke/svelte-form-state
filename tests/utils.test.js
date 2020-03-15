@@ -3,7 +3,8 @@ import {
     keys,
     obj_diff_keys,
     is_callable,
-    array_unique_merge,
+    obj_subset,
+    obj_update,
 } from "../src/utils.js";
 
 test('range', () => {
@@ -39,4 +40,13 @@ test('is_callable', () => {
 
     expect(is_callable("func")).toBeFalsy();
     expect(is_callable(null)).toBeFalsy();
+});
+
+it ('tests obj_subset', () => {
+    expect(obj_subset({a: 123, b: 456}, ['a'])).toEqual({a: 123});
+    expect(obj_subset({a: 123, b: 456}, ['c'])).toEqual({});
+});
+
+it('tests obj_update', () => {
+    expect(obj_update({a: 123, b: 456}, {a: 789})).toEqual({a:789, b: 456});
 });

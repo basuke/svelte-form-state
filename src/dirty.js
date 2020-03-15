@@ -1,4 +1,6 @@
 import {get} from "svelte/store";
+import {keys} from "./utils";
+
 export const name = "dirty";
 
 export function init(_state) {
@@ -10,13 +12,20 @@ export function init(_state) {
 
 export function create(result) {
     const {state} = result;
-    state.isDirty = name => get(state).dirty.has(name);
-    return {...result, state};
+    const {dirty} = get(state);
+
+    return {
+        ...result,
+        state: {
+            ...state,
+            isDirty: name => dirty.has(name),
+        }
+    };
 }
 
-export function valueChanged([state, key]) {
-    state.dirty.add(key);
-    return [state, key];
+export function changed([state, values]) {
+    keys(values).forEach(key => state.dirty.add(key));
+    return [state, values];
 }
 
-export default {name, init, valueChanged};
+export default {name, init, changed};

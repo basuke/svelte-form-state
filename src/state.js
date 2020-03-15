@@ -1,4 +1,7 @@
-import {obj_diff_keys, is_callable, del_keys} from './utils';
+import {obj_diff_keys, keys, is_callable, obj_subset, del_keys, obj_update} from './utils';
+
+export const name = 'state';
+export const events = ['init', 'change', 'beforeSync'];
 
 export function init(config) {
     const {values = {}, plugins = []} = config;
@@ -9,8 +12,12 @@ export function init(config) {
         plugins,
     };
 
-    const finalize = {init: state => del_keys(state, 'config')};
-    return apply(plugins.concat(finalize), 'init', state);
+    return apply(
+        plugins,
+        'init',
+        state,
+        state => del_keys(state, 'config')
+    );
 }
 
 /**
@@ -19,7 +26,13 @@ export function init(config) {
  * @param string method 
  * @param any initial 
  */
-export function apply(plugins, method, initial) {
+export function apply(plugins, method, initial, finalize = null) {
+    if (finalize) {
+        const finalizer = {};
+        finalizer[method] = finalize;
+        plugins = plugins.concat(finalizer);
+    }
+
     return plugins
         .filter(plugin => is_callable(plugin[method]))
         .reduce(
@@ -33,21 +46,25 @@ export function changed(state, values) {
         return state;
 
     const {plugins} = state;
+    const changedValues = obj_subset(values, diff_keys);
 
-    for (const key of diff_keys) {
-        let value = values[key];
+    [state, values] = apply(plugins, 'changed', [state, changedValues], ([state, values]) => {
+        obj_update(state.values, values);
+        return [state, values];
+    });
 
-        state.values[key] = value;
-
-        state = apply(plugins, 'valueChanged', [state, key])[0];
-
-        const [state1, _, doIt] = apply(plugins, 'shouldSyncValue', [state, key, true]);
-        state = state1;
-        if (doIt)
-            state.setFormValue(key, state.values[key]);
-    }
-
-    return state;
+    return sync(state, values);
 }
 
-export default {init, apply, changed};
+export function sync(state, values) {
+    const {plugins} = state;
+
+    return apply(plugins, 'beforeSync', [state, values], ([state, values]) => {
+        for (const key of keys(values)) {
+            state.setFormValue(key, state.values[key]);
+        }
+        return state;
+    });
+}
+
+export default {init, apply, changed, sync};

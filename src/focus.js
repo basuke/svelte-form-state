@@ -1,44 +1,61 @@
-import {keys} from './utils';
+import {keys, obj_subset} from './utils';
+import {sync, apply} from './state';
 
 export const name = "focus";
-
-export const events = ['onFocus', 'onBlue'];
+export const events = ['didFocus', 'didBlur'];
 
 export function prepare(config) {
     return config;
 }
 
 export function init(_state) {
-    return {..._state, focus: null, pendingKeys: new Set()};
+    return {..._state, focus: null};
 }
 
 export function create(result) {
     const {form, state, values} = result;
 
+    function doFocus(state, key) {
+        const {plugins} = state;
+    
+        return apply(plugins, 'didFocus', [{...state, focus: key}, key], ([state, _]) => {
+            return state;
+        });
+        /*
+        if (errors[key]) {
+            delete errors[key];
+            pendingKeys.add(key);
+        }
+        */
+    }
+    
     form.focus = keys(values).reduce((obj, key) => {
-        obj[key] = () => state.update(state => focus(state, key));
+        obj[key] = () => state.update(state => doFocus(state, key));
         return obj;
     }, {});
 
     form.blur = () => {
         state.update(state => {
-            return blur(state);
+            const {plugins, focus, values} = state;
+            state = {...state, focus: null};
+            if (focus)
+                state = sync(state, obj_subset(values, [focus]));
+
+            return apply(plugins, 'didBlur', state);
         });
     };
 
     return {...result, form};
 }
 
-export function shouldSyncValue([state, key, flag]) {
-    const {focus, pendingKeys} = state;
-    flag = flag && (focus !== key);
-    if (!flag)
-        pendingKeys.add(key);
-    return [state, key, flag];
-}
+export function beforeSync([state, values]) {
+    const {focus} = state;
 
-export function valuesChanged(state) {
-    return state;
+    return [state, keys(values).reduce((filtered, key) => {
+        if (key !== focus)
+            filtered[key] = values[key];
+        return filtered;
+    }, {})];
 }
 
 export function shouldValidate([state, key, doIt]) {
@@ -47,24 +64,4 @@ export function shouldValidate([state, key, doIt]) {
     return [state, key, doIt];
 }
 
-function focus(state, key) {
-    const {errors, pendingKeys} = state;
-
-    if (errors[key]) {
-        delete errors[key];
-        pendingKeys.add(key);
-    }
-
-    return {...state, errors, focus: key, pendingKeys};
-}
-
-function blur(state) {
-    const {pendingKeys, setFormValue, values} = state;
-    for (const key of Array.from(pendingKeys)) {
-        setFormValue(key, values[key]);
-        // validateValue(state, key, values[key]);
-    }
-    return {...state, focus: null, pendingKeys: new Set()};
-}
-
-export default {name, events, prepare, init, create, valuesChanged, shouldSyncValue, shouldValidate};
+export default {name, events, prepare, init, create, beforeSync};
