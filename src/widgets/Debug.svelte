@@ -34,7 +34,7 @@ const columnCount = 7;
             <td class={$form[key] == $state.values[key] ? 'no-change' : ''}>{$state.values[key]}</td>
             <td><input type=checkbox disabled checked={$state.focus == key}></td>
             <td><input type=checkbox disabled checked={$state.dirty.has(key)}></td>
-            <td><input type=checkbox disabled checked={$state.pendingKeys.has(key)}></td>
+            <td><input type=checkbox disabled checked={$state.validationPending.has(key)}></td>
             <td class="error-message">{$state.errors[key] ? $state.errors[key].join(", ") : ""}</td>
         </tr>
 

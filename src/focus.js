@@ -21,12 +21,6 @@ export function create(result) {
         return apply(plugins, 'didFocus', [{...state, focus: key}, key], ([state, _]) => {
             return state;
         });
-        /*
-        if (errors[key]) {
-            delete errors[key];
-            pendingKeys.add(key);
-        }
-        */
     }
     
     form.focus = keys(values).reduce((obj, key) => {
@@ -48,7 +42,7 @@ export function create(result) {
     return {...result, form};
 }
 
-export function beforeSync([state, values]) {
+export function willSync([state, values]) {
     const {focus} = state;
 
     return [state, keys(values).reduce((filtered, key) => {
@@ -57,11 +51,3 @@ export function beforeSync([state, values]) {
         return filtered;
     }, {})];
 }
-
-export function shouldValidate([state, key, doIt]) {
-    const {focus} = state;
-    if (focus == key) doIt = false;
-    return [state, key, doIt];
-}
-
-export default {name, events, prepare, init, create, beforeSync};

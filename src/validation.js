@@ -1,23 +1,37 @@
-import {apply} from './state';
+import { keys } from './utils';
+
+export const name = "validation";
 
 export function init(state) {
     const {config: {validators = []}} = state;
-    return {...state, validators, errors: {}, valid: undefined};
+    return {
+        ...state,
+        validators,
+        errors: {},
+        validationPending: new Set(),
+        valid: undefined
+    };
 }
 
-export function valueChanged([state, key]) {
-    const {plugins, values, pendingKeys} = state;
-    const value = values[key];
+export function didFocus([state, key]) {
+    const {errors, validationPending} = state;
+    if (errors[key])
+        delete errors[key];
+    validationPending.add(key);
+    return [state, key];
+}
 
-    const [state1, _, doIt] = apply(plugins, 'shouldValidate', [state, key, true]);
-    state = state1;
+export function didBlur(state) {
+    return state;
+}
 
-    if (doIt)
-        validateValue(state, key, value);
-    else
-        pendingKeys.add(key);
+export function willSync([state, values]) {
+    const {validators, validationPending} = state;
+    for (const key of keys(values).filter(key => key in validators && !validationPending.has(key))) {
+        validateValue(state, key, values[key]);
+    }
 
-    return [{...state, valid: undefined}, key];
+    return [{...state, valid: undefined}, values];
 }
 
 export function validate(state) {
@@ -33,24 +47,18 @@ export function validate(state) {
         ...state,
         valid,
         dirty: new Set(keys(values)),
-        pendingKeys: new Set(),
+        validationPending: new Set(),
     };
 }
 
-export function validateValue(state, key, value) {
+function validateValue(state, key, value) {
     const {validators, errors} = state;
-
-    if (!validators[key])
-        return true;
 
     errors[key] = validators[key].reduce((result, validator) => {
         const error = validator({key, value, errors: result});
         return error ? [...result, error] : result;
     }, []);
 
-    if (errors[key].length)
-        return false;
-
-    delete errors[key];
-    return true;
+    if (!errors[key].length)
+        delete errors[key];
 }

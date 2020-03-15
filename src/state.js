@@ -1,7 +1,7 @@
 import {obj_diff_keys, keys, is_callable, obj_subset, del_keys, obj_update} from './utils';
 
 export const name = 'state';
-export const events = ['init', 'change', 'beforeSync'];
+export const events = ['init', 'change', 'willSync'];
 
 export function init(config) {
     const {values = {}, plugins = []} = config;
@@ -59,12 +59,10 @@ export function changed(state, values) {
 export function sync(state, values) {
     const {plugins} = state;
 
-    return apply(plugins, 'beforeSync', [state, values], ([state, values]) => {
+    return apply(plugins, 'willSync', [state, values], ([state, values]) => {
         for (const key of keys(values)) {
             state.setFormValue(key, state.values[key]);
         }
         return state;
     });
 }
-
-export default {init, apply, changed, sync};

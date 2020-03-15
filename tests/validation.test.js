@@ -5,7 +5,7 @@ it("tests validation", () => {
     const {form, state} = create({
         values: {name: ""},
         validators: {
-            name: [value => value ? "" : "required"]
+            name: [({value}) => value ? "" : "required"]
         }
     });
 
@@ -21,5 +21,5 @@ it("tests validation", () => {
         return values;
     });
 
-    // expect(get(state).errors['name']).toBe(['required']);
+    expect(get(state).errors['name']).toEqual(['required']);
 });
