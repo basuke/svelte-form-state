@@ -1,7 +1,7 @@
 {
   "name": "svelte-form-state",
   "version": "1.0.0",
-  "description": "Form values and state management library for Svelte",
+  "description": "Form values and state management library using Svelte state.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "svelte": "src/index.js",

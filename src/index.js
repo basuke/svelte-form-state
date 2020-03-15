@@ -1,19 +1,11 @@
-import {writable} from "svelte/store";
 import {setContext} from "svelte";
-import {init, apply, changed} from './state';
-import {del_keys} from './utils';
+import {apply, sync} from './state';
+import {create as createForm} from './form';
 
-export const name = 'index';
-export const events = ['create'];
+export {apply, sync} from './state';
+export * from './utils';
 
-export function define(config) { 
-    const {form, state} = create(config);
-    setContext('form', form);
-    setContext('state', state);
-    return {form, state};
-}
-
-const plugins = [
+export const defaultPlugins = [
     require('./plugins/dirty'),
     require('./plugins/filtering'),
     require('./plugins/focus'),
@@ -21,35 +13,18 @@ const plugins = [
 ];
 
 export function create(config) {
-    let values = {...config.values};
+    if (!('plugins' in config))
+        config.plugins = defaultPlugins;
 
-    const form = writable(values);
-    const state = writable({
-        ...init({plugins, ...config}),
-
-        setFormValue(key, value) {
-            form.update(values => {
-                values[key] = value;
-                return values;
-            })
-        }
-    });
-
-    form.subscribe(values => {
-        state.update(_state => changed(_state, values));
-    });
-
-    return apply(plugins.concat([finalize]), 'create', {values, form, state});
+    return createForm(config);
 }
 
-const finalize = {
-    create(result) {
-        const state = {...result.state};
-        return {
-            ...del_keys(result, 'values'),
-            state: del_keys(state, 'update', 'set')
-        };
-    }
-};
+export function define(config) { 
+    const {form, state} = result = create(config);
 
-export default {define, create};
+    setContext('form', form);
+    setContext('state', state);
+    return result;
+}
+
+export default {define, create, apply, sync};
