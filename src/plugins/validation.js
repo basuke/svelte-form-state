@@ -62,3 +62,5 @@ function validateValue(state, key, value) {
     if (!errors[key].length)
         delete errors[key];
 }
+
+export default {name, init, didFocus, didBlur, willSync, validate};

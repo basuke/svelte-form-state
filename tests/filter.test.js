@@ -42,3 +42,9 @@ it("tests filter with focus", () => {
     expect(get(form).name).toBe("Hello!!!!");
 });
 
+it("tests filtering plugin is disabled when no configuration", () => {
+    const plugin = require('../src/plugins/filtering');
+    expect(plugin.qualify({})).toBeFalsy();
+    expect(plugin.qualify({filters: { name: [] }})).toBeTruthy();
+    expect(plugin.qualify({filters: {}})).toBeFalsy();
+});

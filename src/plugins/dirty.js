@@ -28,4 +28,4 @@ export function changed([state, values]) {
     return [state, values];
 }
 
-export default {name, init, changed};
+export default {name, init, create, changed};

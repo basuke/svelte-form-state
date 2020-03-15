@@ -2,8 +2,7 @@ import {create} from "../src/index.js";
 import {get} from "svelte/store";
 
 it("tests validation", () => {
-    const {form, state} = create({
-        values: {name: ""},
+    const {form, state} = create({name: ""}, {
         validators: {
             name: [({value}) => value ? "" : "required"]
         }

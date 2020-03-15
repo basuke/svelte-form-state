@@ -51,3 +51,5 @@ export function willSync([state, values]) {
         return filtered;
     }, {})];
 }
+
+export default {name, events, prepare, init, create, willSync};

@@ -5,6 +5,7 @@ import {
     is_callable,
     obj_subset,
     obj_update,
+    is_empty,
 } from "../src/utils.js";
 
 test('range', () => {
@@ -49,4 +50,19 @@ it ('tests obj_subset', () => {
 
 it('tests obj_update', () => {
     expect(obj_update({a: 123, b: 456}, {a: 789})).toEqual({a:789, b: 456});
+});
+
+it('tests is_empty', () => {
+    expect(is_empty(false)).toBeTruthy();
+    expect(is_empty(null)).toBeTruthy();
+    expect(is_empty(0)).toBeTruthy();
+    expect(is_empty([])).toBeTruthy();
+    expect(is_empty({})).toBeTruthy();
+    expect(is_empty("")).toBeTruthy();
+    expect(is_empty(undefined)).toBeTruthy();
+
+    expect(is_empty(1)).toBeFalsy();
+    expect(is_empty([1])).toBeFalsy();
+    expect(is_empty("1")).toBeFalsy();
+    expect(is_empty({a:1})).toBeFalsy();
 });

@@ -66,3 +66,13 @@ export function obj_update(dest, src) {
         return dest;
     }, dest);
 }
+
+export function is_empty(val) {
+    if (val === undefined || val === null)
+        return true;
+    if (typeof val !== 'object')
+        return !val;
+    if ('length' in val)
+        return val.length === 0;
+    return keys(val).length === 0;
+}

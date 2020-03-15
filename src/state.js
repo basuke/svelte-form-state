@@ -9,7 +9,7 @@ export function init(config) {
     const state = {
         config,
         values,
-        plugins,
+        plugins: plugins.filter(plugin => !('qualify' in plugin) || plugin.qualify(config)),
     };
 
     return apply(

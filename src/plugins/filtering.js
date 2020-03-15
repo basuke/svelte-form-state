@@ -1,6 +1,10 @@
-import {keys} from "../utils";
+import {keys, is_empty} from "../utils";
 
 export const name = "filter";
+
+export function qualify({filters}) {
+    return !is_empty(filters);
+}
 
 export function init(_state) {
     const {config: {filters = []}} = _state;
@@ -24,4 +28,4 @@ export function changed([state, values]) {
     return [state, values];
 }
 
-export default {name, init, changed};
+export default {name, qualify, init, changed};
