@@ -1,5 +1,5 @@
 import {get} from "svelte/store";
-import {keys} from "./utils";
+import {keys} from "../utils";
 
 export const name = "dirty";
 

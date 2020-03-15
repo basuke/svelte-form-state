@@ -1,5 +1,5 @@
-import {keys, obj_subset} from './utils';
-import {sync, apply} from './state';
+import {keys, obj_subset} from '../utils';
+import {sync, apply} from '../state';
 
 export const name = "focus";
 export const events = ['didFocus', 'didBlur'];

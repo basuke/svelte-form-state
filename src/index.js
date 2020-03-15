@@ -14,10 +14,10 @@ export function define(config) {
 }
 
 const plugins = [
-    require('./dirty'),
-    require('./filtering'),
-    require('./focus'),
-    require('./validation'),
+    require('./plugins/dirty'),
+    require('./plugins/filtering'),
+    require('./plugins/focus'),
+    require('./plugins/validation'),
 ];
 
 export function create(config) {
