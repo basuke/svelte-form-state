@@ -1,6 +1,6 @@
 {
   "name": "svelte-form-state",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Form values and state management library using Svelte state.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -11,7 +11,8 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "test": "jest tests/"
+    "test": "jest tests/",
+    "patch-publish": "yarn build && yarn version --patch && npm publish"
   },
   "repository": {
     "type": "git",
