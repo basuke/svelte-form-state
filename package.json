@@ -12,7 +12,8 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "test": "jest tests/",
-    "patch-publish": "yarn build && yarn version --patch && npm publish"
+    "patch-release": "yarn build && yarn version --patch && git push && npm publish",
+    "minor-release": "yarn build && yarn version --minor && git push && npm publish"
   },
   "repository": {
     "type": "git",

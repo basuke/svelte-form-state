@@ -1,7 +1,7 @@
 <script>
 
 import {getContext} from 'svelte';
-import {array_unique_merge} from './utils';
+import {array_unique_merge} from '../utils';
 
 export let state = undefined;
 export let name = undefined;
