@@ -1,13 +1,13 @@
 {
   "name": "svelte-form-state",
-  "version": "0.2.2",
-  "description": "Form values and state management library using Svelte state.",
+  "version": "0.2.3",
+  "description": "Form values and state management library for Svelte",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "svelte": "src/index.js",
   "files": [
-    "dist",
-    "src"
+    "dist/*",
+    "src/*"
   ],
   "scripts": {
     "build": "rollup -c",
