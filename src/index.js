@@ -21,7 +21,7 @@ export function create(values, config, plugins) {
     if (typeof values !== 'object')
         throw "Values must be object to define initial values of form";
     if (config === undefined) {
-        config = values;
+        config = {values};
     } else {
         if ('values' in config)
             throw "Duplicate definitions of values: first argument and config.values";
@@ -38,11 +38,11 @@ export function create(values, config, plugins) {
 }
 
 export function define(values, config, plugins) { 
-    const {form, state} = result = create(values, config, plugins);
+    const {form, state} = create(values, config, plugins);
 
     setContext('form', form);
     setContext('state', state);
-    return result;
+    return {form, state};
 }
 
 export { default as Checkbox } from "./widgets/Checkbox.svelte";
