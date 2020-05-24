@@ -6,7 +6,8 @@
   "module": "dist/index.esm.js",
   "svelte": "src/index.js",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "scripts": {
     "build": "rollup -c",
