@@ -1,13 +1,11 @@
 import {setContext} from "svelte";
 import {apply, sync} from './state';
 import {create as createForm} from './form';
-import dirtyPlugin from './plugins/dirty';
-import filteringPlugin from './plugins/filtering';
-import focusPlugin from './plugins/focus';
-import validationPlugin from './plugins/validation';
 
-export {apply, sync} from './state';
-export * from './utils';
+export {default as dirtyPlugin} from './plugins/dirty';
+export {default as filteringPlugin} from './plugins/filtering';
+export {default as focusPlugin} from './plugins/focus';
+export {default as validationPlugin} from './plugins/validation';
 
 export const defaultPlugins = [
     dirtyPlugin,
@@ -15,6 +13,9 @@ export const defaultPlugins = [
     focusPlugin,
     validationPlugin,
 ];
+
+export {apply, sync} from './state';
+export * from './utils';
 
 export function create(values, config, plugins) {
     if (typeof values !== 'object')
@@ -43,5 +44,13 @@ export function define(values, config, plugins) {
     setContext('state', state);
     return result;
 }
+
+export { default as Checkbox } from "./widgets/Checkbox.svelte";
+export { default as Debug } from "./widgets/Debug.svelte";
+export { default as Errors } from "./widgets/Errors.svelte";
+export { default as Input } from "./widgets/Input.svelte";
+export { default as Radio } from "./widgets/Radio.svelte";
+export { default as Select } from "./widgets/Select.svelte";
+export { default as Textarea } from "./widgets/Textarea.svelte";
 
 export default {define, create, apply, sync};

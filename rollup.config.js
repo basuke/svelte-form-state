@@ -13,26 +13,13 @@ export default [
         input: "src/index.js",
         external,
         output: [
-            {file: pkg.main, 'format': 'cjs'},
-            {file: pkg.module, 'format': 'es' },
-        ],
-        plugins: [
-            commonjs(),
-            resolve(),
-        ],
-    },
-    {
-        input: [
-            "src/widgets/index.js",
-        ],
-        external,
-        output: [
-            {file: "dist/widgets/index.cjs.js", 'format': 'cjs'},
-            {file: "dist/widgets/index.esm.js", 'format': 'es' },
+            {file: pkg.main, 'format': 'cjs', exports: 'named'},
+            {file: pkg.module, 'format': 'es'},
         ],
         plugins: [
             svelte(),
             resolve(),
+            commonjs(),
         ],
     },
 ];
