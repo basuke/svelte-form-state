@@ -21,18 +21,25 @@ export function create(values, config, plugins) {
     if (typeof values !== 'object')
         throw "Values must be object to define initial values of form";
     if (config === undefined) {
-        config = {values};
+        if ('values' in values) {
+            config = values;
+        } else {
+            config = {values};
+        }
     } else {
-        if ('values' in config)
+        if ('values' in config) {
             throw "Duplicate definitions of values: first argument and config.values";
+        }
         config.values = values;
     }
 
-    if (plugins !== undefined)
+    if (plugins !== undefined) {
         config.plugins = plugins;
+    }
 
-    if (!('plugins' in config))
+    if (!('plugins' in config)) {
         config.plugins = defaultPlugins;
+    }
 
     return createForm(config);
 }
