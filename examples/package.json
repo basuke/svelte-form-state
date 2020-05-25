@@ -17,6 +17,6 @@
   },
   "dependencies": {
     "sirv-cli": "^0.4.4",
-    "svelte-form-state": "^0.2.6"
+    "svelte-form-state": "*"
   }
 }
