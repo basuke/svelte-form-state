@@ -31,11 +31,12 @@ export function create(result) {
     form.blur = () => {
         state.update(state => {
             const {plugins, focus, values} = state;
-            state = {...state, focus: null};
+            state = apply(plugins, 'didBlur', {...state, focus: null});
+
             if (focus)
                 state = sync(state, obj_subset(values, [focus]));
 
-            return apply(plugins, 'didBlur', state);
+            return state;
         });
     };
 
