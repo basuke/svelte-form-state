@@ -22,12 +22,15 @@ export function didFocus([state, key]) {
 }
 
 export function didBlur(state) {
-    return state;
+    return {...state, validationPending: new Set()};
 }
 
 export function willSync([state, values]) {
-    const {validators, validationPending} = state;
-    for (const key of keys(values).filter(key => key in validators && !validationPending.has(key))) {
+    const {validators, validationPending: pending, dirty = undefined} = state;
+
+    const shouldValidate = key => key in validators && !pending.has(key) && (!dirty || dirty.has(key));
+
+    for (const key of keys(values).filter(shouldValidate)) {
         validateValue(state, key, values[key]);
     }
 
@@ -47,7 +50,6 @@ export function validate(state) {
         ...state,
         valid,
         dirty: new Set(keys(values)),
-        validationPending: new Set(),
     };
 }
 
