@@ -14,11 +14,13 @@ export function create(result) {
     const {state} = result;
     const {dirty} = get(state);
 
+    const isDirty = name => name ? dirty.has(name) : dirty.size > 0;
+
     return {
         ...result,
         state: {
             ...state,
-            isDirty: name => dirty.has(name),
+            isDirty,
         }
     };
 }
