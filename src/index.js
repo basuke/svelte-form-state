@@ -17,6 +17,7 @@ export const defaultPlugins = [
 export {apply, sync} from './state';
 export * from './utils';
 export * from './validators';
+export * from './filters';
 
 export function create(values, config, plugins) {
     if (typeof values !== 'object')
