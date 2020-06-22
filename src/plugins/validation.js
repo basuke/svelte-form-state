@@ -13,6 +13,16 @@ export function init(state) {
     };
 }
 
+export function create(result) {
+    const {form, state} = result;
+
+    form.validate = () => {
+        state.update(_state => validateValues(_state));
+    };
+
+    return result;
+}
+
 export function didFocus([state, key]) {
     const {errors, validationPending} = state;
     if (errors[key])
@@ -37,7 +47,7 @@ export function willSync([state, values]) {
     return [{...state, valid: undefined}, values];
 }
 
-export function validate(state) {
+function validateValues(state) {
     const {validators, values} = state;
 
     for (const key of keys(validators)) {
@@ -65,4 +75,4 @@ function validateValue(state, key, value) {
         delete errors[key];
 }
 
-export default {name, init, didFocus, didBlur, willSync, validate};
+export default {name, init, create, didFocus, didBlur, willSync};
