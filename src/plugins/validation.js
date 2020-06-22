@@ -1,4 +1,5 @@
 import { keys } from '../utils';
+import { get } from 'svelte/store';
 
 export const name = "validation";
 
@@ -18,6 +19,9 @@ export function create(result) {
 
     form.validate = () => {
         state.update(_state => validateValues(_state));
+
+        const {errors} = get(state);
+        return Object.keys(errors).length == 0;
     };
 
     return result;
