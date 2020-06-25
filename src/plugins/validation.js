@@ -52,10 +52,11 @@ export function willSync([state, values]) {
 }
 
 function validateValues(state) {
-    const {validators, values} = state;
+    const {validators, values, dirty} = state;
 
     for (const key of keys(validators)) {
         validateValue(state, key, values[key]);
+        dirty.add(key);
     }
 
     const valid = keys(state.errors).length == 0;
@@ -63,7 +64,6 @@ function validateValues(state) {
     return {
         ...state,
         valid,
-        dirty: new Set(keys(values)),
     };
 }
 
