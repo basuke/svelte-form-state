@@ -10,14 +10,19 @@ export function create(config) {
     const {plugins = []} = config;
 
     const form = writable(values);
+
+    form.setValue = function(key, value) {
+        this.update(values => {
+            values[key] = value;
+            return values;
+        })
+    };
+
     const state = writable({
         ...init({plugins, ...config}),
 
         setFormValue(key, value) {
-            form.update(values => {
-                values[key] = value;
-                return values;
-            })
+            form.setValue(key, value)
         }
     });
 
