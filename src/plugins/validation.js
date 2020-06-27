@@ -27,7 +27,7 @@ export function create(result) {
     const {form, state} = result;
 
     form.validate = () => {
-        state.update(_state => validateValues(_state));
+        state.update(_state => validateValues(_state, true));
 
         const {valid} = get(state);
         return valid;
@@ -43,7 +43,7 @@ export function create(result) {
 
     form.clearCustomErrors = (name = undefined) => {
         state.update(_state => {
-            const {customErrors} = _state;
+            let {customErrors} = _state;
             if (name === undefined) {
                 customErrors = {};
             } else {
@@ -81,12 +81,14 @@ export function willSync([state, values]) {
     return [{...state, valid: undefined}, values];
 }
 
-function validateValues(state) {
+function validateValues(state, force = false) {
     const {validators, values, dirty} = state;
 
     for (const key of keys(validators)) {
-        validateValue(state, key, values[key]);
-        dirty.add(key);
+        if (force || dirty.has(key)) {
+            validateValue(state, key, values[key]);
+            dirty.add(key);
+        }
     }
 
     const valid = keys(state.errors).length == 0;
