@@ -3,12 +3,21 @@ import { get } from 'svelte/store';
 
 export const name = "validation";
 
+function addItem(errors, name, value) {
+    if (!(name in errors)) {
+        errors[name] = [];
+    }
+
+    errors[name].push(value);
+}
+
 export function init(state) {
     const {config: {validators = []}} = state;
     return {
         ...state,
         validators,
         errors: {},
+        customErrors: {},
         validationPending: new Set(),
         valid: undefined
     };
@@ -20,8 +29,29 @@ export function create(result) {
     form.validate = () => {
         state.update(_state => validateValues(_state));
 
-        const {errors} = get(state);
-        return Object.keys(errors).length == 0;
+        const {valid} = get(state);
+        return valid;
+    };
+
+    form.addCustomError = (name, error) => {
+        state.update(_state => {
+            const {customErrors} = _state;
+            addItem(customErrors, name, error);
+            return validateValues(_state);
+        });
+    };
+
+    form.clearCustomErrors = (name = undefined) => {
+        state.update(_state => {
+            const {customErrors} = _state;
+            if (name === undefined) {
+                customErrors = {};
+            } else {
+                delete customErrors[name];
+            }
+
+            return validateValues({..._state, customErrors});
+        });
     };
 
     return result;
@@ -68,12 +98,16 @@ function validateValues(state) {
 }
 
 function validateValue(state, key, value) {
-    const {validators, errors} = state;
+    const {validators, errors, customErrors} = state;
 
     errors[key] = validators[key].reduce((result, validator) => {
         const error = validator({key, value, errors: result});
         return error ? [...result, error] : result;
     }, []);
+
+    if (key in customErrors) {
+        errors[key] = [...errors[key], ...customErrors[key]];
+    }
 
     if (!errors[key].length)
         delete errors[key];
