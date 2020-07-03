@@ -54,12 +54,4 @@ export function define(values, config, plugins) {
     return {form, state};
 }
 
-export { default as Checkbox } from "./widgets/Checkbox.svelte";
-export { default as Debug } from "./widgets/Debug.svelte";
-export { default as Errors } from "./widgets/Errors.svelte";
-export { default as Input } from "./widgets/Input.svelte";
-export { default as Radio } from "./widgets/Radio.svelte";
-export { default as Select } from "./widgets/Select.svelte";
-export { default as Textarea } from "./widgets/Textarea.svelte";
-
 export default {define, create, apply, sync};
