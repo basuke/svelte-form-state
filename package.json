@@ -41,11 +41,13 @@
     "@testing-library/jest-dom": "^5.8.0",
     "@testing-library/svelte": "^3.0.0",
     "@tsconfig/svelte": "^1.0.10",
+    "@types/jest": "^26.0.10",
     "babel-jest": "^26.0.1",
     "jest": "^26.0.1",
     "jest-transform-svelte": "^2.1.1",
     "rollup": "^2.10.8",
     "rollup-plugin-svelte": "^5.1.1",
+    "ts-jest": "^26.2.0",
     "tslib": "^2.0.1",
     "typescript": "^3.9.7"
   },

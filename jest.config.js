@@ -1,9 +1,10 @@
 module.exports = {
     transform: {
         "^.+\\.svelte$": "jest-transform-svelte",
+        "^.+\\.ts$": "ts-jest",
         "^.+\\.js$": "babel-jest"
     },
-    moduleFileExtensions: ["js", "svelte"],
+    moduleFileExtensions: ["js", "ts", "svelte"],
     testPathIgnorePatterns: ["node_modules"],
     bail: false,
     verbose: true,
