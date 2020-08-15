@@ -1,4 +1,4 @@
-import {keys, is_empty} from "../utils";
+import {keys, is_empty} from "../utils.ts";
 
 export const name = "filter";
 

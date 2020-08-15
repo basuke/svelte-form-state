@@ -1,4 +1,4 @@
-import {obj_diff_keys, keys, is_callable, obj_subset, del_keys, obj_update} from './utils';
+import {obj_diff_keys, keys, is_callable, obj_subset, del_keys, obj_update} from './utils.ts';
 
 export const name = 'state';
 export const events = ['init', 'change', 'willSync'];

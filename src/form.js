@@ -1,6 +1,6 @@
 import {writable} from "svelte/store";
 import {init, apply, changed} from './state';
-import {del_keys} from './utils';
+import {del_keys} from './utils.ts';
 
 export const name = 'form';
 export const events = ['create'];

@@ -6,7 +6,7 @@ import {
     obj_subset,
     obj_update,
     is_empty,
-} from "../src/utils.js";
+} from "../src/utils.ts";
 
 test('range', () => {
     expect(range(0, 5)).toStrictEqual([0,1,2,3,4]);

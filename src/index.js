@@ -15,7 +15,7 @@ export const defaultPlugins = [
 ];
 
 export {apply, sync} from './state';
-export * from './utils';
+export * from './utils.ts';
 export * from './validators';
 export * from './filters';
 

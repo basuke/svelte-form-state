@@ -1,5 +1,5 @@
 import {create} from "../src/index.js";
-import {is_callable} from "../src/utils.js";
+import {is_callable} from "../src/utils.ts";
 import {get} from "svelte/store";
 
 test('basic feature', () => {

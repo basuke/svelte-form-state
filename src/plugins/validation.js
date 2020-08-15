@@ -1,4 +1,4 @@
-import { keys } from '../utils';
+import { keys } from '../utils.ts';
 import { get } from 'svelte/store';
 
 export const name = "validation";

@@ -1,4 +1,4 @@
-import {keys, obj_subset} from '../utils';
+import {keys, obj_subset} from '../utils.ts';
 import {sync, apply} from '../state';
 
 export const name = "focus";
